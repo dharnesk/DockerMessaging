@@ -1,7 +1,7 @@
 # base image
-FROM node:12.2.0-alpine
+FROM node:latest
 # Create app directory
-WORKDIR /usr/src/app
+WORKDIR /app
 # Install app dependencies
 COPY package*.json ./
 
@@ -10,5 +10,4 @@ RUN npm install --silent
 COPY . .
 
 #Expose port and start application
-EXPOSE 3000
 CMD ["npm", "start"]

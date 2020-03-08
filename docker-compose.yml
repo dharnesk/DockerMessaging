@@ -2,19 +2,25 @@ version: '3.7'
 
 services:
 ################################################################################
-# webb app server                                                              #
+# web app server                                                               #
 ################################################################################
   webapp:
     container_name: webapp
     build:
       context: webapp
       dockerfile: Dockerfile
-    expose:
-      - ${REACT_APP_PORT}
-    volumes:
-      - '.:/webapp'
-      - '/webapp/node_modules'
     environment:
       - NODE_ENV=development
     ports:
-      - '${REACT_APP_PORT}:${REACT_APP_PORT}'
+      - '3000:3000'
+    depends_on: 
+      - webapi
+################################################################################
+# Rest API Server                                                              #
+################################################################################
+  webapi:
+    build:
+      context: webapi
+      dockerfile: Dockerfile
+    ports:
+      - "8000:80"
