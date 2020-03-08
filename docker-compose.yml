@@ -19,8 +19,25 @@ services:
 # Rest API Server                                                              #
 ################################################################################
   webapi:
+    container_name: webapi
     build:
       context: webapi
       dockerfile: Dockerfile
     ports:
       - "8000:80"
+    depends_on: 
+      - database
+################################################################################
+# PostgreSQL database Server                                                   #
+################################################################################
+  database:
+    container_name: webdb
+    image: "postgres" # use latest official postgres version
+    env_file:
+      - database.env # configure postgres
+      - database-secrets.env
+    volumes:
+      - database-data:/var/lib/postgresql/data/ # persist data even if container shuts down
+
+volumes:
+  database-data: # named volumes can be managed easier using docker-compose
