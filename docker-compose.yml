@@ -1,0 +1,84 @@
+version: '3.7'
+
+services:
+################################################################################
+# web app server                                                               #
+################################################################################
+  webapp:
+    container_name: webapp
+    build:
+      context: webapp
+      dockerfile: Dockerfile
+    environment:
+      - NODE_ENV=development
+    ports:
+      - '3000:3000'
+    depends_on: 
+      - webapi
+    networks:
+      - network
+################################################################################
+# Rest API Server                                                              #
+################################################################################
+  webapi:
+    container_name: webapi
+    build:
+      context: webapi
+      dockerfile: Dockerfile
+    ports:
+      - "5000:80"
+    environment:
+      - ASPNETCORE_ENVIRONMENT=Development
+    depends_on: 
+      - database
+      - rabbitmq
+    networks:
+      - network
+################################################################################
+# PostgreSQL database Server                                                   #
+################################################################################
+  database:
+    container_name: webdb
+    image: "postgres" # use latest official postgres version
+    env_file:
+      - database.env # configure postgres
+      - database-secrets.env
+    volumes:
+      - database-data:/var/lib/postgresql/data/ # persist data even if container shuts down
+    networks:
+      - network
+################################################################################
+# RabbitMQ Server                                                              #
+################################################################################
+  rabbitmq:
+    # There is a prebuilt RabbitMQ image; see
+    # https://hub.docker.com/_/rabbitmq/ for details.
+    # This variant is built on Alpine Linux (it's smaller) and includes
+    # the management UI.
+    image: 'rabbitmq:3.6-management-alpine'
+
+    # These ports are exposed on the host; 'hostport:containerport'.
+    # You could connect to this server from outside with the *host's*
+    # DNS name or IP address and port 5672 (the left-hand side of the
+    # colon).
+    ports:
+      # The standard AMQP protocol port
+      - '5672:5672'
+      # HTTP management UI
+      - '15672:15672'
+
+    # Run this container on a private network for this application.
+    # This is necessary for magic Docker DNS to work: other containers
+    # also running on this network will see a host name "rabbitmq"
+    # (the name of this section) and the internal port 5672, even though
+    # that's not explicitly published above.
+    networks:
+      - network
+
+volumes:
+  database-data: # named volumes can be managed easier using docker-compose
+
+networks:
+  # Declare our private network.  We must declare one for the magic
+  # Docker DNS to work, but otherwise its default settings are fine.
+  network: {}
