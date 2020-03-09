@@ -1,5 +1,5 @@
 # base image
-FROM node:latest
+FROM node:alpine
 # Create app directory
 WORKDIR /app
 # Install app dependencies
