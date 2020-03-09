@@ -6,13 +6,14 @@ services:
 ################################################################################
   webapp:
     container_name: webapp
+    environment:
+      - "NODE_ENV=development"
+      - "REACT_APP_API_URL=${DOTNET_CORE_API_URL}:${DOTNET_CORE_PORT_HOST}"
     build:
       context: webapp
       dockerfile: Dockerfile
-    environment:
-      - NODE_ENV=development
     ports:
-      - '3000:3000'
+      - '${REACT_APP_PORT}:${REACT_APP_PORT}'
     depends_on: 
       - webapi
     networks:
@@ -22,13 +23,13 @@ services:
 ################################################################################
   webapi:
     container_name: webapi
+    ports:
+      - "${DOTNET_CORE_PORT_HOST}:${DOTNET_CORE_PORT_MACHINE}"
+    environment:
+      - ASPNETCORE_ENVIRONMENT=Development
     build:
       context: webapi
       dockerfile: Dockerfile
-    ports:
-      - "5000:80"
-    environment:
-      - ASPNETCORE_ENVIRONMENT=Development
     depends_on: 
       - database
       - rabbitmq

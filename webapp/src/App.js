@@ -7,7 +7,7 @@ function App() {
     <div className="App">
       <header className="App-header">
         <img src={logo} className="App-logo" alt="logo" />
-        Default webpage
+        API_URL: {process.env.REACT_APP_API_URL}
       </header>
     </div>
   );
